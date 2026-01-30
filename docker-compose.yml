@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  sat-data-acquisition:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sat-data-acquisition
+    volumes:
+      # Mount data directory for outputs
+      - ./data:/app/data
+      # Optional: Mount examples for development
+      - ./examples:/app/examples
+    environment:
+      # Add environment variables here
+      - PYTHONUNBUFFERED=1
+      # - SAT_DATA_ACQUISITION_S3_BUCKET=your-bucket-name
+    stdin_open: true
+    tty: true
+    command: bash

@@ -1,0 +1,27 @@
+# [tbump] configuration file
+
+[version]
+current = "0.1.0"
+regex = '''
+  (?P<major>\d+)
+  \.
+  (?P<minor>\d+)
+  \.
+  (?P<patch>\d+)
+'''
+
+[git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+[[file]]
+src = "pyproject.toml"
+search = 'version = "{current_version}"'
+
+[[file]]
+src = "sat_data_acquisition/__version__.py"
+search = '__version__ = "{current_version}"'
+
+[[before_commit]]
+name = "Run tests"
+command = "make lint && make test-fast"

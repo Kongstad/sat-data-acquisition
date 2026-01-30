@@ -1,0 +1,59 @@
+# Docker ignore file for sat-data-acquisition
+# Excludes unnecessary files from Docker build context
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Development files
+.env
+.env.*
+*.log
+
+# Data outputs (keep structure, exclude generated files)
+data/images/**/*.tif
+data/images/**/*.tiff
+data/multi_image_test/**/*.tif
+data/multi_image_test/**/*.tiff
+data/log/*.txt
+
+# Temporary files
+*.tmp
+.DS_Store
+Thumbs.db
+*.png
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
