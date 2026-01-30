@@ -23,7 +23,6 @@ Python package for downloading satellite imagery from multiple sources with a st
   - [SAR for All-Weather Monitoring](#sar-for-all-weather-monitoring)
   - [Multi-Area Batch Processing](#multi-area-batch-processing)
 - [Advanced Features](#advanced-features)
-  - [Provider Selection](#provider-selection)
   - [Overlapping Tile Handling](#overlapping-tile-handling)
   - [S3 Storage](#s3-storage)
 - [Development](#development)
@@ -250,24 +249,6 @@ for idx, area in areas.iterrows():
 ```
 
 ## Advanced Features
-
-### Provider Selection
-
-Different providers have different characteristics:
-
-```python
-# Microsoft Planetary Computer (MPC)
-# - Global coverage, always available
-# - Authentication token handled automatically
-processing_params = ProcessingParams(satellite='S2MPC')
-
-# Element84 (E84)
-# - Better for US/Americas
-# - Different band scaling
-processing_params = ProcessingParams(satellite='S2E84')
-```
-
-See [SATELLITE_SOURCES.md](docs/SATELLITE_SOURCES.md) for provider details.
 
 ### Overlapping Tile Handling
 

@@ -186,7 +186,7 @@ def save_geotiff(
     **kwargs,
 ) -> None:
     """
-    Save images as GeoTIFF, ensuring band names are preserved for datasets.
+    Save images as GeoTIFF, either as merged multi-band or separate files per band.
 
     Args:
         image: Image data to save (all bands in the dataset are saved).
@@ -201,56 +201,109 @@ def save_geotiff(
         settings: Settings object.
         band: Optional band label for filename. If not provided, auto-generated from image bands.
         custom_naming: Custom naming convention for saved files.
-        merge_bands: Flag to indicate if bands are merged.
+        merge_bands: If True, save all bands in a single multi-band file.
+                     If False, save each band as a separate single-band file.
     """
-
-    def _save(path: Union[str, Path]) -> None:
-        """Saves the GeoTIFF."""
-        image_to_save = image
-        if isinstance(image, xarray.Dataset):
-            # Convert to DataArray
-            image_to_save = image.to_array(dim="band")
-
+    try:
         # Get nodata value from settings
         nodata_value = settings.dtype_dict.get(satellite, (None, None))[1]
-
-        # Set the nodata attribute on the DataArray
-        if nodata_value is not None:
-            image_to_save.rio.write_nodata(nodata_value, inplace=True)
-
         compression = "DEFLATE" if enable_compression else "NONE"
-        image_to_save.rio.to_raster(path, compress=compression, nodata=nodata_value)
 
-    try:
-        # Auto-generate band label if not provided
-        if band is None:
+        if merge_bands:
+            # Save as single multi-band file
+            def _save_merged(path: Union[str, Path]) -> None:
+                """Saves the merged multi-band GeoTIFF."""
+                image_to_save = image
+                if isinstance(image, xarray.Dataset):
+                    # Convert to DataArray
+                    image_to_save = image.to_array(dim="band")
+
+                # Set the nodata attribute on the DataArray
+                if nodata_value is not None:
+                    image_to_save.rio.write_nodata(nodata_value, inplace=True)
+
+                image_to_save.rio.to_raster(path, compress=compression, nodata=nodata_value)
+
+            # Auto-generate band label if not provided
+            if band is None:
+                if isinstance(image, xarray.Dataset):
+                    bands_list = [str(b) for b in image.data_vars]
+                    band = "_".join(bands_list[:3]) + ("_etc" if len(bands_list) > 3 else "")
+                else:
+                    band = "data"
+
+            band_name = "merged"
+            save_image(
+                identifier=identifier,
+                datetime=datetime,
+                satellite=satellite,
+                band=band_name,
+                output_path=output_path,
+                save_to_local=save_to_local,
+                file_type="tiff",
+                save_function=_save_merged,
+                settings=settings,
+                custom_naming=custom_naming,
+                merge_bands=True,
+                save_to_s3=save_to_s3,
+                s3_bucket=s3_bucket,
+                s3_path=s3_path,
+                provider=provider,
+                identifier_type=identifier_type,
+                **kwargs,
+            )
+            logger.debug(f"Saved merged GeoTIFF: {identifier} on {datetime}")
+        else:
+            # Save each band as a separate file
             if isinstance(image, xarray.Dataset):
                 bands_list = [str(b) for b in image.data_vars]
-                band = "_".join(bands_list[:3]) + ("_etc" if len(bands_list) > 3 else "")
+            elif isinstance(image, xarray.DataArray) and "band" in image.dims:
+                # DataArray with band dimension
+                bands_list = [str(b) for b in image.coords["band"].values]
             else:
-                band = "data"
+                # Single band DataArray - treat as one band
+                bands_list = [band or "data"]
 
-        band_name = "merged" if merge_bands else get_native_band_name(band, satellite, settings)
-        save_image(
-            identifier=identifier,
-            datetime=datetime,
-            satellite=satellite,
-            band=band_name,
-            output_path=output_path,
-            save_to_local=save_to_local,
-            file_type="tiff",
-            save_function=_save,
-            settings=settings,
-            custom_naming=custom_naming,
-            merge_bands=merge_bands,
-            save_to_s3=save_to_s3,
-            s3_bucket=s3_bucket,
-            s3_path=s3_path,
-            provider=provider,
-            identifier_type=identifier_type,
-            **kwargs,
-        )
-        logger.debug(f"Saved GeoTIFF: {identifier} on {datetime}")
+            for band_name in bands_list:
+                def _save_single_band(path: Union[str, Path], bn=band_name) -> None:
+                    """Saves a single band GeoTIFF."""
+                    if isinstance(image, xarray.Dataset):
+                        band_data = image[bn]
+                    elif isinstance(image, xarray.DataArray) and "band" in image.dims:
+                        band_data = image.sel(band=bn)
+                    else:
+                        band_data = image
+
+                    # Set the nodata attribute
+                    if nodata_value is not None:
+                        band_data.rio.write_nodata(nodata_value, inplace=True)
+
+                    band_data.rio.to_raster(path, compress=compression, nodata=nodata_value)
+
+                native_band_name = get_native_band_name(band_name, satellite, settings)
+                save_image(
+                    identifier=identifier,
+                    datetime=datetime,
+                    satellite=satellite,
+                    band=native_band_name,
+                    output_path=output_path,
+                    save_to_local=save_to_local,
+                    file_type="tiff",
+                    save_function=_save_single_band,
+                    settings=settings,
+                    custom_naming=custom_naming,
+                    merge_bands=False,
+                    save_to_s3=save_to_s3,
+                    s3_bucket=s3_bucket,
+                    s3_path=s3_path,
+                    provider=provider,
+                    identifier_type=identifier_type,
+                    **kwargs,
+                )
+            num_bands = len(bands_list)
+            logger.debug(
+                f"Saved {num_bands} separate GeoTIFF files: {identifier} on {datetime}"
+            )
     except Exception as e:
         logger.error(f"Error saving GeoTIFF for {identifier} on {datetime}: {e}")
         raise
@@ -275,7 +328,7 @@ def save_numpy(
     **kwargs,
 ) -> None:
     """
-    Save images as numpy files.
+    Save images as numpy files, either as merged multi-band or separate files per band.
 
     Args:
         image: Image data to save.
@@ -289,32 +342,78 @@ def save_numpy(
         identifier_type: Type of identifier, either "field" or "tile".
         settings: Settings object.
         custom_naming: Custom naming convention for saved files.
-        merge_bands: Flag to indicate if bands are merged.
+        merge_bands: If True, save all bands in a single 3D numpy array (bands, height, width).
+                     If False, save each band as a separate 2D numpy array file.
     """
-    band = get_native_band_name(band, satellite, settings) if not merge_bands else "merged"
+    if merge_bands:
+        # Save as single multi-band numpy file
+        band_name = "merged"
+        save_image(
+            identifier=identifier,
+            datetime=datetime,
+            satellite=satellite,
+            band=band_name,
+            output_path=output_path,
+            save_to_local=save_to_local,
+            file_type="npy",
+            save_function=lambda path: np.save(
+                path,
+                (image.to_array(dim="band") if isinstance(image, xarray.Dataset) else image).values,
+            ),
+            save_to_s3=save_to_s3,
+            s3_bucket=s3_bucket,
+            s3_path=s3_path,
+            settings=settings,
+            custom_naming=custom_naming,
+            merge_bands=True,
+            provider=provider,
+            identifier_type=identifier_type,
+            **kwargs,
+        )
+    else:
+        # Save each band as a separate file
+        if isinstance(image, xarray.Dataset):
+            bands_list = [str(b) for b in image.data_vars]
+        elif isinstance(image, xarray.DataArray) and "band" in image.dims:
+            # DataArray with band dimension
+            bands_list = [str(b) for b in image.coords["band"].values]
+        else:
+            # Single band DataArray
+            bands_list = [band or "data"]
 
-    save_image(
-        identifier=identifier,
-        datetime=datetime,
-        satellite=satellite,
-        band=band,
-        output_path=output_path,
-        save_to_local=save_to_local,
-        file_type="npy",
-        save_function=lambda path: np.save(
-            path,
-            (image.to_array(dim="band") if isinstance(image, xarray.Dataset) else image).values,
-        ),
-        save_to_s3=save_to_s3,
-        s3_bucket=s3_bucket,
-        s3_path=s3_path,
-        settings=settings,
-        custom_naming=custom_naming,
-        merge_bands=merge_bands,
-        provider=provider,
-        identifier_type=identifier_type,
-        **kwargs,
-    )
+        for band_name in bands_list:
+            def _save_single_band(path: Union[str, Path], bn=band_name) -> None:
+                """Saves a single band numpy array."""
+                if isinstance(image, xarray.Dataset):
+                    band_data = image[bn].values
+                elif isinstance(image, xarray.DataArray) and "band" in image.dims:
+                    band_data = image.sel(band=bn).values
+                else:
+                    band_data = image.values
+
+                np.save(path, band_data)
+
+            native_band_name = get_native_band_name(band_name, satellite, settings)
+            save_image(
+                identifier=identifier,
+                datetime=datetime,
+                satellite=satellite,
+                band=native_band_name,
+                output_path=output_path,
+                save_to_local=save_to_local,
+                file_type="npy",
+                save_function=_save_single_band,
+                settings=settings,
+                custom_naming=custom_naming,
+                merge_bands=False,
+                save_to_s3=save_to_s3,
+                s3_bucket=s3_bucket,
+                s3_path=s3_path,
+                provider=provider,
+                identifier_type=identifier_type,
+                **kwargs,
+            )
+        logger.debug(f"Saved {len(bands_list)} separate numpy files: {identifier} on {datetime}")
 
 
 def save_data(

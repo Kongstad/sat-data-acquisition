@@ -207,25 +207,31 @@ enable_compression=False  # No compression (faster but larger)
 **Required**: No  
 **Default**: `True`
 
-Merge all bands into single multi-band file vs. separate files per band.
+Control whether to save all bands in a single multi-band file or as separate single-band files.
 
 ```python
-merge_bands=True   # Single file with multiple bands (recommended)
+merge_bands=True   # Single multi-band file (recommended)
 merge_bands=False  # Separate file per band
 ```
 
-**Single file** (merge_bands=True):
+**Single multi-band file** (merge_bands=True):
 ```
-S2MPC_2024-06-15_merged_copenhagen.tif
+S2MPC_2024-06-15_merged_copenhagen.tif  # Contains all bands (RGB, NIR, etc.)
 ```
+- GeoTIFF: Single file with multiple bands (e.g., 3 bands for RGB)
+- NumPy: Single 3D array with shape (bands, height, width)
+- Recommended for most use cases
 
-**Separate files** (merge_bands=False):
+**Separate single-band files** (merge_bands=False):
 ```
 S2MPC_2024-06-15_red_copenhagen.tif
 S2MPC_2024-06-15_green_copenhagen.tif
 S2MPC_2024-06-15_blue_copenhagen.tif
 S2MPC_2024-06-15_nir_copenhagen.tif
 ```
+- GeoTIFF: One file per band, each containing a single band
+- NumPy: One 2D array per band with shape (height, width)
+- Useful when processing bands individually or for specialized workflows
 
 ## Naming
 
