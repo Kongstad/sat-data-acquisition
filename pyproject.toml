@@ -49,9 +49,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/sat_data_acquisition"
-Repository = "https://github.com/yourusername/sat_data_acquisition"
-Documentation = "https://github.com/yourusername/sat_data_acquisition#readme"
+Homepage = "https://github.com/Kongstad/sat-data-acquisition"
+Repository = "https://github.com/Kongstad/sat-data-acquisition"
+Documentation = "https://github.com/Kongstad/sat-data-acquisition#readme"
 
 [build-system]
 requires = ["setuptools>=45", "wheel"]
