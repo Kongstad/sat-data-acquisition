@@ -115,7 +115,7 @@ params = ProcessingParams(
 
 **Provider**: Microsoft Planetary Computer (LANDSATMPC)  
 **Product**: Collection 2 Level-2 Surface Reflectance  
-**Resolution**: 30m (15m panchromatic)  
+**Resolution**: 30m (multispectral), 100m (thermal)  
 **Revisit Time**: 16 days  
 **Data Range**: 1972 - present (historical Landsat data available)  
 

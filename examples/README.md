@@ -168,15 +168,15 @@ Example GeoJSON with 3 global cities: [data/geojson/example_areas.geojson](data/
 
 ```
 output/
-├── copenhagen_20240615_red_green_blue.tif
-├── copenhagen_20240620_red_green_blue.tif
-├── london_20240615_red_green_blue.tif
-├── london_20240620_red_green_blue.tif
-├── seattle_20240615_red_green_blue.tif
-└── seattle_20240620_red_green_blue.tif
+├── copenhagen_20240615_merged.tif
+├── copenhagen_20240620_merged.tif
+├── london_20240615_merged.tif
+├── london_20240620_merged.tif
+├── seattle_20240615_merged.tif
+└── seattle_20240620_merged.tif
 ```
 
-Format: `{area_name}_{date}_{bands}.tif`
+Format: `{area_name}_{date}_merged.tif` (multi-band GeoTIFF)
 
 For DEM: `{area_name}_elevation.tif` (no date)
 

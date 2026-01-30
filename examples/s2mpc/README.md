@@ -89,9 +89,9 @@ dataset = client.search_and_create_image(
 
 ```
 output/
-├── copenhagen_20240615_red_green_blue.tif
-├── copenhagen_20240620_red_green_blue.tif
-└── copenhagen_20240625_red_green_blue.tif
+├── copenhagen_20240615_merged.tif
+├── copenhagen_20240620_merged.tif
+└── copenhagen_20240625_merged.tif
 ```
 
 ## See Also

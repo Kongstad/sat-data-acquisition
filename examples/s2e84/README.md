@@ -69,8 +69,8 @@ data/images/
 └── S2E84/
     └── 2024/
         └── tiff/
-            ├── S2E84_2024-06-15_red_green_blue_nir_copenhagen_center.tif
-            └── S2E84_2024-07-20_red_green_blue_vesterbro.tif
+            ├── S2E84_2024-06-15_merged_copenhagen_center.tif
+            └── S2E84_2024-07-20_merged_vesterbro.tif
 ```
 
 ## Notes

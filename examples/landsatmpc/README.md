@@ -144,9 +144,9 @@ ndbi = (swir1 - nir) / (swir1 + nir + 1e-8)
 
 ```
 output/
-├── seattle_20240615_red_green_blue.tif
-├── seattle_20240701_red_green_blue.tif
-└── seattle_20240717_red_green_blue.tif
+├── seattle_20240615_merged.tif
+├── seattle_20240701_merged.tif
+└── seattle_20240717_merged.tif
 ```
 
 ## See Also

@@ -69,7 +69,7 @@ output_path/
 ├── S2MPC/
 │   └── 2024/
 │       └── tiff/
-│           └── S2MPC_2024-06-15_red_green_blue_copenhagen.tif
+│           └── S2MPC_2024-06-15_merged_copenhagen.tif
 ├── S2E84/
 │   └── 2024/
 │       └── tiff/
@@ -93,9 +93,11 @@ identifier_type='custom'     # Custom identifier
 ```
 
 Example filenames:
-- `area_name`: `S2MPC_2024-06-15_red_green_blue_copenhagen.tif`
-- `field_id`: `S2MPC_2024-06-15_red_green_blue_field_12345.tif`
-- `custom`: `S2MPC_2024-06-15_red_green_blue_my_custom_id.tif`
+- `area_name`: `S2MPC_2024-06-15_merged_copenhagen.tif`
+- `field_id`: `S2MPC_2024-06-15_merged_field_12345.tif`
+- `custom`: `S2MPC_2024-06-15_merged_my_custom_id.tif`
+
+Note: `merged` indicates a multi-band GeoTIFF. For single-band saves, the band name appears instead (e.g., `S2MPC_2024-06-15_red_copenhagen.tif`).
 
 ## AWS S3 Storage
 
@@ -129,7 +131,7 @@ s3_path='users/john/copenhagen'       # User-specific
 Full S3 path structure:
 ```
 s3://bucket/s3_path/satellite/year/format/filename
-s3://my-data/projects/demo/S2MPC/2024/tiff/S2MPC_2024-06-15_red_green_blue_copenhagen.tif
+s3://my-data/projects/demo/S2MPC/2024/tiff/S2MPC_2024-06-15_merged_copenhagen.tif
 ```
 
 ### AWS Credentials
@@ -214,7 +216,7 @@ merge_bands=False  # Separate file per band
 
 **Single file** (merge_bands=True):
 ```
-S2MPC_2024-06-15_red_green_blue_nir_copenhagen.tif
+S2MPC_2024-06-15_merged_copenhagen.tif
 ```
 
 **Separate files** (merge_bands=False):
