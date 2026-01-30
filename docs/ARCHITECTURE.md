@@ -9,12 +9,15 @@ The following diagram illustrates how user requests are transformed into analysi
 ```mermaid
 graph TD
     User([User Request]) --> Client[SatDataClient]
-    Client --> Params[ProcessingParams]
+    User --> Params[ProcessingParams]
     
     subgraph Providers [Data Source Adapters]
         Client --> MPC[Planetary Computer]
         Client --> E84[Element84]
     end
+    
+    Params --> MPC
+    Params --> E84
     
     MPC --> STAC_API[STAC API Search]
     E84 --> STAC_API
