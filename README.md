@@ -1,9 +1,41 @@
 # Satellite Data Acquisition
 
-Python package for downloading satellite imagery from multiple sources with a unified API.
+Python package for downloading satellite imagery from multiple sources with a standardized API.
 
 ![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+  - [Installation](#installation)
+  - [Basic Usage](#basic-usage)
+  - [Visualization](#visualization)
+  - [Save to Disk](#save-to-disk)
+- [Available Satellites](#available-satellites)
+- [Documentation](#documentation)
+- [Project Structure](#project-structure)
+- [Common Use Cases](#common-use-cases)
+  - [Temporal Analysis](#temporal-analysis)
+  - [Cloud Masking with SCL](#cloud-masking-with-scl)
+  - [SAR for All-Weather Monitoring](#sar-for-all-weather-monitoring)
+  - [Multi-Area Batch Processing](#multi-area-batch-processing)
+- [Advanced Features](#advanced-features)
+  - [Provider Selection](#provider-selection)
+  - [Overlapping Tile Handling](#overlapping-tile-handling)
+  - [S3 Storage](#s3-storage)
+- [Development](#development)
+  - [Using the Makefile](#using-the-makefile)
+  - [Manual Testing](#manual-testing)
+  - [Docker Deployment (Optional)](#docker-deployment-optional)
+  - [Environment Variables](#environment-variables)
+- [Requirements](#requirements)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+- [Support](#support)
+- [What's Next?](#whats-next)
 
 ## Features
 
@@ -300,6 +332,18 @@ make clean
 ```
 Removes build artifacts, cache files, and temporary test data.
 
+**Versioning and Releases:**
+The project uses `tbump` for version management. To release a new version:
+```bash
+# Example: bump to 0.2.0
+tbump 0.2.0
+```
+This will automatically:
+1. Run linting and tests
+2. Update version strings in `pyproject.toml` and `sat_data_acquisition/__version__.py`
+3. Create a Git commit and tag
+4. Push the changes and tag to the remote repository
+
 ### Manual Testing
 
 You can also run pytest directly:
@@ -347,7 +391,7 @@ Contributions welcome! This is a portfolio project demonstrating clean code prac
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
