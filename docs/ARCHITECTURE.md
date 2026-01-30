@@ -7,30 +7,36 @@ This document describes the high-level architecture of the `sat-data-acquisition
 The following diagram illustrates how user requests are transformed into analysis-ready satellite data.
 
 ```mermaid
-graph TD
-    User([User Request]) --> Client[SatDataClient]
-    User --> Params[ProcessingParams]
+flowchart TD
+    User([User Request]) --> Params[ProcessingParams]
+    Params --> Client[SatDataClient]
     
-    subgraph Providers [Data Source Adapters]
+    subgraph Providers
         Client --> MPC[Planetary Computer]
         Client --> E84[Element84]
     end
-    
-    Params --> MPC
-    Params --> E84
     
     MPC --> STAC_API[STAC API Search]
     E84 --> STAC_API
     
     STAC_API --> Loader[odc-stac Loader]
     
-    subgraph Processing [In-Memory Engine]
+    subgraph Processing
         Loader --> XR[xarray Dataset]
         XR --> Clip[Spatial Clipping]
-        XR --> Reproject[UTM Reprojection]
+        Clip --> Reproject[UTM Reprojection]
     end
     
-    Processing --> Output([Local GeoTIFF / S3 / NumPy])
+    Reproject --> Save[Save Module]
+    
+    Save --> Local[Local Storage]
+    Save --> S3[S3 Upload]
+    
+    Local --> GeoTIFF1([GeoTIFF])
+    Local --> NumPy1([NumPy Array])
+    
+    S3 --> GeoTIFF2([GeoTIFF])
+    S3 --> NumPy2([NumPy Array])
 ```
 
 ## Core Components
