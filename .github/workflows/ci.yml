@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install --system -e .
-          uv pip install --system pytest ruff black mypy
+          uv pip install --system pytest ruff black mypy flake8
       
       - name: Run linting
         run: make lint
