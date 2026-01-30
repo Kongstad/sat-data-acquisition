@@ -154,7 +154,7 @@ class SaveParams:
     save_as_geotiff: bool = True
     save_as_numpy: bool = False
     file_format: str = "geotiff"
-    identifier_type: str = "field"
+    identifier_type: str = "area_name"
     enable_compression: bool = True
     detailed_report: bool = False
     custom_naming: Optional[str] = None

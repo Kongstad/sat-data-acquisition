@@ -46,7 +46,7 @@ Python package for downloading satellite imagery from multiple sources with a st
 - **Cloud filtering**: Configurable cloud coverage thresholds
 - **Storage options**: Save to local disk or AWS S3
 - **Type-safe API**: Pydantic models for all parameters
-- **Production ready**: Automatic retries, comprehensive logging
+- **Reliable and Observable**: Automatic retries, comprehensive logging
 
 ## Quick Start
 
@@ -119,19 +119,23 @@ plt.show()
 ### Save to Disk
 
 ```python
-from sat_data_acquisition.processing import save_geotiff
+from sat_data_acquisition import SaveParams
+from sat_data_acquisition.processing import save_data
+
+save_params = SaveParams(
+    output_path='./data/images',
+    save_to_local=True,
+    save_as_geotiff=True,
+)
 
 for time_val in dataset.time.values:
-    save_geotiff(
+    save_data(
         image=dataset.sel(time=time_val),
         identifier='copenhagen',
-        datetime=str(time_val)[:10],
+        datetime=str(time_val),
         satellite='S2MPC',
         provider='MPC',
-        output_path='./data/images',
-        save_to_local=True,
-        identifier_type='area_name',
-        enable_compression=True,
+        save_params=save_params,
     )
 ```
 
@@ -278,19 +282,25 @@ processing_params = ProcessingParams(
 ### S3 Storage
 
 ```python
-from sat_data_acquisition.processing import save_geotiff
+from sat_data_acquisition import SaveParams
+from sat_data_acquisition.processing import save_data
 
-save_geotiff(
-    image=image,
-    identifier='field_123',
-    datetime='2024-06-15',
-    satellite='S2MPC',
-    provider='MPC',
+save_params = SaveParams(
     output_path='./temp',
     save_to_local=False,  # Don't save locally
     save_to_s3=True,      # Upload to S3
     s3_bucket='my-satellite-data',
     s3_path='projects/monitoring',
+    save_as_geotiff=True,
+)
+
+save_data(
+    image=image,
+    identifier='field_123',
+    datetime='2024-06-15',
+    satellite='S2MPC',
+    provider='MPC',
+    save_params=save_params,
 )
 ```
 

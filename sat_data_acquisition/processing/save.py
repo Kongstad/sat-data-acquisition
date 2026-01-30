@@ -7,6 +7,7 @@ from typing import Any, Callable, Optional, Union
 import numpy as np
 import xarray
 
+from sat_data_acquisition.models.params import SaveParams
 from sat_data_acquisition.processing.utils import TypeUtils, get_native_band_name
 
 logger = logging.getLogger(__name__)
@@ -314,3 +315,72 @@ def save_numpy(
         identifier_type=identifier_type,
         **kwargs,
     )
+
+
+def save_data(
+    image: Union[xarray.DataArray, xarray.Dataset],
+    identifier: str,
+    datetime: str,
+    satellite: str,
+    provider: str,
+    save_params: SaveParams,
+    band: Optional[str] = None,
+    **kwargs,
+) -> None:
+    """
+    Save images using a SaveParams configuration object.
+
+    Args:
+        image: Image data to save.
+        identifier: Area name or field ID.
+        datetime: Date and time of the image.
+        satellite: Satellite identifier.
+        provider: Data provider identifier.
+        save_params: SaveParams configuration object.
+        band: Optional band label for filename.
+    """
+    from sat_data_acquisition.config.settings import get_settings
+
+    settings = get_settings()
+    output_path = str(save_params.output_path) if save_params.output_path else ""
+
+    if save_params.save_as_geotiff:
+        save_geotiff(
+            image=image,
+            identifier=identifier,
+            datetime=datetime,
+            satellite=satellite,
+            provider=provider,
+            output_path=output_path,
+            save_to_local=save_params.save_to_local,
+            identifier_type=save_params.identifier_type,
+            enable_compression=save_params.enable_compression,
+            settings=settings,
+            band=band,
+            merge_bands=save_params.merge_bands,
+            save_to_s3=save_params.save_to_s3,
+            s3_bucket=save_params.s3_bucket,
+            s3_path=save_params.s3_path,
+            custom_naming=save_params.custom_naming,
+            **kwargs,
+        )
+
+    if save_params.save_as_numpy:
+        save_numpy(
+            image=image,
+            identifier=identifier,
+            datetime=datetime,
+            satellite=satellite,
+            provider=provider,
+            band=band or "data",
+            output_path=output_path,
+            save_to_local=save_params.save_to_local,
+            identifier_type=save_params.identifier_type,
+            settings=settings,
+            merge_bands=save_params.merge_bands,
+            save_to_s3=save_params.save_to_s3,
+            s3_bucket=save_params.s3_bucket,
+            s3_path=save_params.s3_path,
+            custom_naming=save_params.custom_naming,
+            **kwargs,
+        )

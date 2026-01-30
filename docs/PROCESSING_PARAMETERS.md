@@ -61,7 +61,6 @@ Start of temporal search range.
 
 ```python
 start_date='2024-06-01'
-start_date='2023-01-01'  # Works with historical data for Landsat
 ```
 
 ### end_date
@@ -94,7 +93,7 @@ bands=['red', 'nir']                     # For NDVI
 bands=['red', 'green', 'blue', 'scl']    # RGB + cloud mask
 
 # Sentinel-1 examples
-bands=['VV', 'VH']  # Both polarizations
+bands=['vv', 'vh']  # Both polarizations
 
 # Landsat examples
 bands=['red', 'green', 'blue', 'nir08', 'lwir11']  # RGB + NIR + thermal
@@ -102,7 +101,7 @@ bands=['red', 'green', 'blue', 'nir08', 'lwir11']  # RGB + NIR + thermal
 
 **Default bands per satellite:**
 - S2MPC/S2E84: `['B02', 'B03', 'B04', 'B08']` (RGB + NIR)
-- S1MPC: `['VV', 'VH']`
+- S1MPC: `['vv', 'vh']`
 - LANDSATMPC: `['red', 'green', 'blue', 'nir08']`
 - CopDEM30MPC: `['data']`
 
@@ -233,8 +232,7 @@ Usually best to leave as default unless you have specific requirements.
 Value used for nodata/missing pixels.
 
 ```python
-fill_value=0       # Use 0 for nodata
-fill_value=-9999   # Common nodata value
+fill_value=0
 ```
 
 **Defaults:**

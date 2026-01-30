@@ -157,27 +157,33 @@ params = ProcessingParams(
 ## HLS (Harmonized Landsat Sentinel)
 
 **Provider**: Microsoft Planetary Computer  
-**Products**: HLS_LANDSAT, HLS_SENTINEL  
+**Products**: HLS_LANDSAT (L30), HLS_SENTINEL (S30)  
 **Resolution**: 30m  
 **Revisit Time**: ~3 days (combined)  
-**Data Range**: 2013 - present  
+**Data Range**: 2013 - present (L30), 2015 - present (S30)
 
 ### Available Bands
 
-| Band | Wavelength (µm) | Description |
-|------|-----------------|-------------|
-| B01 | 0.43-0.45 | Coastal Aerosol |
-| B02 | 0.45-0.51 | Blue |
-| B03 | 0.53-0.59 | Green |
-| B04 | 0.64-0.67 | Red |
-| B05 | 0.85-0.88 | NIR |
-| B06 | 1.57-1.65 | SWIR 1 |
-| B07 | 2.11-2.29 | SWIR 2 |
-| B08 | 0.50-0.68 | Panchromatic |
-| B09 | 1.36-1.38 | Cirrus |
-| B10 | 10.60-12.51 | TIR 1 |
-| B11 | 11.50-12.51 | TIR 2 |
-| B12 | - | QA |
+The HLS product harmonizes Landsat-8 and Sentinel-2 data to a common 30m grid.
+
+| Band Name | OLI Band | MSI Band | L30 Subdataset | S30 Subdataset | Description |
+|-----------|----------|----------|----------------|----------------|-------------|
+| coastal | 1 | 1 | 01 | 01 | Coastal aerosol |
+| blue | 2 | 2 | 02 | 02 | Blue |
+| green | 3 | 3 | 03 | 03 | Green |
+| red | 4 | 4 | 04 | 04 | Red |
+| rededge1 | - | 5 | - | 05 | Red-edge 1 |
+| rededge2 | - | 6 | - | 06 | Red-edge 2 |
+| rededge3 | - | 7 | - | 07 | Red-edge 3 |
+| nir_broad | - | 8 | - | 08 | NIR broad |
+| nir_narrow| 5 | 8A | 05 | 09 | NIR narrow |
+| swir1 | 6 | 11 | 06 | 12 | SWIR 1 |
+| swir2 | 7 | 12 | 07 | 13 | SWIR 2 |
+| water_vapor | - | 9 | - | 10 | Water vapor |
+| cirrus | 9 | 10 | 08 | 11 | Cirrus |
+| thermal1 | 10 | - | 09 | - | Thermal infrared 1 |
+| thermal2 | 11 | - | 10 | - | Thermal infrared 2 |
+| qa | - | - | 11 | 14 | Quality Assessment |
 
 ### Key Advantage
 
@@ -191,7 +197,7 @@ params = ProcessingParams(
 ```python
 params = ProcessingParams(
     satellite='HLS_SENTINEL',  # or 'HLS_LANDSAT'
-    bands=['B04', 'B03', 'B02', 'B05'],
+    bands=['red', 'green', 'blue', 'nir_narrow'],
     cloud_coverage=20,
 )
 ```
@@ -251,24 +257,6 @@ params = ProcessingParams(
 | Thermal | No | No | Yes | Yes | No |
 | Night | No | Yes | No | No | - |
 | Color | Yes | No | Yes | Yes | No |
-
-## Provider Differences
-
-### Element84 vs Microsoft Planetary Computer (Sentinel-2)
-
-Both provide Sentinel-2 Level-2A data, but with different characteristics:
-
-**Element84 (S2E84)**:
-- Generally lower processing overhead
-- Simple band names ('red', 'green', 'blue')
-- Good for basic RGB + NIR workflows
-
-**Microsoft Planetary Computer (S2MPC)**:
-- Additional bands available (TCI, AOT, WVP)
-- Better authentication integration
-- More reliable for production workloads
-
-**Recommendation**: Start with Element84 for simplicity, use MPC for production.
 
 ---
 

@@ -98,20 +98,25 @@ class SatDataSettings(BaseSettings):
     }
 
     valid_bands_hls: set = {
-        "B01",
-        "B02",
-        "B03",
-        "B04",
-        "B05",
-        "B06",
-        "B07",
-        "B08",
-        "B8A",
-        "B09",
-        "B10",
-        "B11",
-        "B12",
-        "QA",
+        "coastal",
+        "blue",
+        "green",
+        "red",
+        "rededge1",
+        "rededge2",
+        "rededge3",
+        "nir_broad",
+        "nir_narrow",
+        "swir1",
+        "swir2",
+        "water_vapor",
+        "cirrus",
+        "thermal1",
+        "thermal2",
+        "qa",
+        # Keep numeric band names for backward compatibility
+        "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A",
+        "B09", "B10", "B11", "B12", "QA",
     }
 
     valid_bands_copdem30: set = {"data"}

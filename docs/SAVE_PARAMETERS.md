@@ -362,7 +362,7 @@ save_params = SaveParams(
 
 ```python
 from sat_data_acquisition import SatDataClient, ProcessingParams, SaveParams
-from sat_data_acquisition.processing import save_geotiff
+from sat_data_acquisition.processing import save_data
 
 client = SatDataClient()
 
@@ -375,6 +375,7 @@ processing_params = ProcessingParams(
 save_params = SaveParams(
     output_path='./data',
     save_to_local=True,
+    save_as_geotiff=True,
 )
 
 # Get imagery
@@ -383,22 +384,19 @@ dataset = client.search_and_create_image(
     processing_params=processing_params,
 )
 
-# Save
+# Save using the clean save_data interface
 for idx, time_val in enumerate(dataset.time.values):
     image_slice = dataset.sel(time=time_val)
     date_str = str(time_val)[:10]
     
-    save_geotiff(
+    save_data(
         image=image_slice,
         identifier='copenhagen',
         datetime=date_str,
         satellite='S2MPC',
         provider='MPC',
-        output_path=save_params.output_path,
-        save_to_local=save_params.save_to_local,
-        identifier_type=save_params.identifier_type,
-        enable_compression=save_params.enable_compression,
-        # ... other save_params attributes
+        save_params=save_params,
+        band='TCI',
     )
 ```
 
