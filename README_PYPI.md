@@ -6,66 +6,25 @@ Python package for downloading satellite imagery from multiple sources with a st
 ![Version](https://img.shields.io/badge/version-0.9.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-## Table of Contents
-
-- [Features](#features)
-- [Quick Start](#quick-start)
-  - [Installation](#installation)
-  - [Basic Usage](#basic-usage)
-  - [Visualization](#visualization)
-  - [Save to Disk](#save-to-disk)
-- [Available Satellites](#available-satellites)
-- [Documentation](#documentation)
-- [Project Structure](#project-structure)
-- [Common Use Cases](#common-use-cases)
-  - [Temporal Analysis](#temporal-analysis)
-  - [Cloud Masking with SCL](#cloud-masking-with-scl)
-  - [SAR for All-Weather Monitoring](#sar-for-all-weather-monitoring)
-  - [Multi-Area Batch Processing](#multi-area-batch-processing)
-- [Advanced Features](#advanced-features)
-  - [Overlapping Tile Handling](#overlapping-tile-handling)
-  - [S3 Storage](#s3-storage)
-- [Development](#development)
-  - [Using the Makefile](#using-the-makefile)
-  - [Manual Testing](#manual-testing)
-  - [Docker Deployment (Optional)](#docker-deployment-optional)
-  - [Environment Variables](#environment-variables)
-- [Requirements](#requirements)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
-- [Support](#support)
-- [What's Next?](#whats-next)
+**[Full Documentation on GitHub](https://github.com/Kongstad/sat-data-acquisition)**
 
 ## Features
 
-- **Multiple satellites**: Sentinel-2, Sentinel-1, Landsat 8/9, HLS (Harmonized Landsat Sentinel), Copernicus DEM
-- **Flexible data providers**: Element84, Microsoft Planetary Computer
-- **Smart search**: By coordinates or area identifier from GeoJSON
-- **Multi-temporal support**: Download imagery across time ranges
+- **Multiple satellites**: Sentinel-2, Sentinel-1, Landsat 8/9, HLS, Copernicus DEM
+- **Flexible providers**: Element84, Microsoft Planetary Computer  
+- **Smart search**: By coordinates or GeoJSON geometries
+- **Multi-temporal**: Download imagery across date ranges
 - **Cloud filtering**: Configurable cloud coverage thresholds
-- **Storage options**: Save to local disk or AWS S3
-- **Type-safe API**: Pydantic models for all parameters
-- **Reliable and Observable**: Automatic retries, comprehensive logging
+- **Storage options**: Local disk or AWS S3
+- **Type-safe API**: Pydantic validation for all parameters
+
+## Installation
+
+```bash
+pip install sat-data-acquisition
+```
 
 ## Quick Start
-
-### Installation
-
-**With UV (recommended - 10-100x faster):**
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv venv && source .venv/bin/activate
-uv pip install -e .
-```
-
-**With pip:**
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e .
-```
-
-### Basic Usage
 
 ```python
 from sat_data_acquisition import SatDataClient, ProcessingParams
@@ -89,7 +48,7 @@ processing_params = ProcessingParams(
     cloud_coverage=20,
 )
 
-# Download
+# Download imagery
 client = SatDataClient()
 dataset = client.search_and_create_image(
     geometry=geometry,
@@ -97,13 +56,13 @@ dataset = client.search_and_create_image(
 )
 
 print(f"Downloaded {len(dataset.time)} images")
-# Image shape: {'time': 12, 'y': 344, 'x': 291}
+# Returns xarray.Dataset with shape: {'time': 12, 'y': 344, 'x': 291}
 ```
 
-### Visualization
+## Visualization
 
 ```python
-import matplotlib.org/matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 # Get first image
@@ -116,7 +75,7 @@ plt.title(f"Sentinel-2 - {str(image.time.values)[:10]}")
 plt.show()
 ```
 
-### Save to Disk
+## Save to Disk
 
 ```python
 from sat_data_acquisition import SaveParams
@@ -126,6 +85,7 @@ save_params = SaveParams(
     output_path='./data/images',
     save_to_local=True,
     save_as_geotiff=True,
+    merge_bands=True,  # Single multi-band file vs separate files per band
 )
 
 for time_val in dataset.time.values:
@@ -141,8 +101,8 @@ for time_val in dataset.time.values:
 
 ## Available Satellites
 
-| Satellite | Bands | Resolution | Revisit | Provider |
-|-----------|-------|------------|---------|----------|
+| Satellite | Bands | Resolution | Revisit | Providers |
+|-----------|-------|------------|---------|-----------|
 | Sentinel-2 | RGB, NIR, SWIR, SCL | 10-60m | 5 days | MPC, E84 |
 | Sentinel-1 | VV, VH (SAR) | 10m | 12 days | MPC |
 | Landsat 8/9 | RGB, NIR, SWIR, Thermal | 30m | 16 days | MPC |
@@ -150,53 +110,12 @@ for time_val in dataset.time.values:
 | HLS Landsat | B01-B12 (harmonized) | 30m | 16 days | MPC |
 | Copernicus DEM | Elevation | 30m | Static | MPC |
 
-**Note**: HLS (Harmonized Landsat Sentinel) provides radiometrically harmonized data from Landsat 8/9 and Sentinel-2, enabling seamless time-series analysis with ~3 day combined revisit frequency.
-
-## Documentation
-
-**Comprehensive guides in [docs/](docs/)**
-
-- **[SATELLITE_SOURCES.md](docs/SATELLITE_SOURCES.md)** - All satellites, bands, wavelengths, resolutions, and use cases
-- **[PROCESSING_PARAMETERS.md](docs/PROCESSING_PARAMETERS.md)** - Complete search and processing configuration
-- **[SAVE_PARAMETERS.md](docs/SAVE_PARAMETERS.md)** - Local and S3 storage configuration
-
-**Working examples in [examples/](examples/)**
-
-- [S2MPC](examples/s2mpc/) - Sentinel-2 (Microsoft Planetary Computer)
-- [S2E84](examples/s2e84/) - Sentinel-2 (Element84)
-- [S1MPC](examples/s1mpc/) - Sentinel-1 SAR
-- [LandsatMPC](examples/landsatmpc/) - Landsat 8/9
-- [HLSMPC](examples/hlsmpc/) - HLS (Harmonized Landsat Sentinel)
-- [CopDEM](examples/cop30dem/) - Copernicus DEM
-
-Each example includes single image and multi-image notebooks with visualization.
-
-## Project Structure
-
-📖 **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - High-level system design and data flow
-
-```
-sat-data-acquisition/
-├── sat_data_acquisition/          # Main package
-│   ├── core/                      # STAC client, iterators
-│   ├── providers/                 # Element84, MPC adapters
-│   ├── models/                    # Pydantic models
-│   ├── processing/                # Image processing, saving
-│   ├── config/                    # Settings, logging
-│   └── utils/                     # Helpers, exceptions
-├── examples/                      # Jupyter notebooks by satellite
-├── docs/                          # Comprehensive documentation
-├── tests/                         # Test suite
-└── data/                          # Local data storage
-    ├── geojson/                   # Example geometries
-    └── images/                    # Downloaded imagery
-```
-
 ## Common Use Cases
 
 ### Temporal Analysis
+
 ```python
-# Download monthly imagery for entire growing season
+# Download monthly imagery for growing season
 processing_params = ProcessingParams(
     satellite='S2MPC',
     bands=['red', 'green', 'blue', 'nir'],
@@ -206,203 +125,62 @@ processing_params = ProcessingParams(
 )
 
 dataset = client.search_and_create_image(geometry, processing_params)
-# Returns xarray with time dimension for analysis
-```
-
-### Cloud Masking with SCL
-```python
-# Use Scene Classification Layer for cloud filtering
-processing_params = ProcessingParams(
-    satellite='S2MPC',
-    bands=['red', 'green', 'blue', 'nir', 'scl'],
-    cloud_coverage=30,  # Allows more scenes
-)
-
-dataset = client.search_and_create_image(geometry, processing_params)
-
-# Mask clouds using SCL band
-# See SATELLITE_SOURCES.md for SCL classification values
+# Analyze vegetation changes over time with xarray
 ```
 
 ### SAR for All-Weather Monitoring
+
 ```python
 # Sentinel-1 works through clouds
 processing_params = ProcessingParams(
     satellite='S1MPC',
-    bands=['vv', 'vh'],  # Polarizations
+    bands=['vv', 'vh'],  # Radar polarizations
     start_date='2024-01-01',
     end_date='2024-12-31',
-)
-```
-
-### Multi-Area Batch Processing
-```python
-import geopandas as gpd
-
-# Load multiple areas
-areas = gpd.read_file('data/geojson/example_areas.geojson')
-
-for idx, area in areas.iterrows():
-    geometry = area['geometry'].__geo_interface__
-    dataset = client.search_and_create_image(geometry, processing_params)
-    # Process and save
-```
-
-## Advanced Features
-
-### Overlapping Tile Handling
-
-By default, overlapping satellite passes from the same day are merged:
-
-```python
-processing_params = ProcessingParams(
-    groupby='solar_day',  # Default: merges same-day tiles
-    # groupby=None,       # Keep separate tiles (advanced)
 )
 ```
 
 ### S3 Storage
 
 ```python
-from sat_data_acquisition import SaveParams
-from sat_data_acquisition.processing import save_data
-
 save_params = SaveParams(
     output_path='./temp',
-    save_to_local=False,  # Don't save locally
-    save_to_s3=True,      # Upload to S3
+    save_to_local=False,
+    save_to_s3=True,
     s3_bucket='my-satellite-data',
     s3_path='projects/monitoring',
-    save_as_geotiff=True,
-)
-
-save_data(
-    image=image,
-    identifier='field_123',
-    datetime='2024-06-15',
-    satellite='S2MPC',
-    provider='MPC',
-    save_params=save_params,
 )
 ```
 
-See [SAVE_PARAMETERS.md](docs/SAVE_PARAMETERS.md) for full S3 configuration.
+## Documentation
 
-## Development
+Visit the [GitHub repository](https://github.com/Kongstad/sat-data-acquisition) for:
 
-### Using the Makefile
-
-The project includes a `Makefile` to simplify common development tasks.
-
-**Linting and Type Checking:**
-```bash
-make lint
-```
-This runs `ruff`, `flake8`, and `mypy` to ensure code quality and type safety.
-
-**Code Formatting:**
-```bash
-make format
-```
-This automatically formats the code using `black` and `isort`.
-
-**Running Tests:**
-```bash
-# Run all tests
-make test
-
-# Run fast tests only (skips slow integration tests)
-make test-fast
-
-# Run tests with coverage report
-make test-cov
-```
-
-**Cleanup:**
-```bash
-make clean
-```
-Removes build artifacts, cache files, and temporary test data.
-
-**Versioning and Releases:**
-The project uses `tbump` for version management. To release a new version:
-```bash
-# Example: bump to 0.2.0
-tbump 0.2.0
-```
-This will automatically:
-1. Run linting and tests
-2. Update version strings in `pyproject.toml` and `sat_data_acquisition/__version__.py`
-3. Create a Git commit and tag
-4. Push the changes and tag to the remote repository
-
-### Manual Testing
-
-You can also run pytest directly:
-```bash
-pytest tests/
-```
-
-### Docker Deployment (Optional)
-
-```bash
-# Build image
-docker build -t sat-data-acquisition .
-
-# Run container
-docker run -v $(pwd)/data:/app/data sat-data-acquisition
-```
-
-### Environment Variables
-
-```bash
-# AWS credentials for S3 (optional)
-export AWS_ACCESS_KEY_ID=your_key
-export AWS_SECRET_ACCESS_KEY=your_secret
-export AWS_DEFAULT_REGION=us-east-1
-
-# Logging level (optional)
-export LOG_LEVEL=INFO
-```
+- Comprehensive guides: Detailed satellite specifications, processing parameters, and save options
+- Working examples: Jupyter notebooks for each satellite with visualization
+- Architecture docs: System design and data flow diagrams
 
 ## Requirements
 
 - Python 3.12+
-- UV package manager (recommended) or pip
-- Docker (optional, for deployment)
+- Core dependencies: xarray, rasterio, geopandas, odc-stac, pystac-client
 
-## Contributing
+## STAC-Native Philosophy
 
-Contributions welcome! This is a portfolio project demonstrating clean code practices:
-
-- Type hints throughout
-- Pydantic models for validation
-- Comprehensive error handling
-- Extensive documentation
-- Test coverage
+Unlike legacy systems that download entire scenes, this package is **STAC-native**. It queries metadata first and leverages lazy-loading to stream only the specific pixels required for your geometry, significantly reducing bandwidth and storage requirements.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+MIT License - see [LICENSE](https://github.com/Kongstad/sat-data-acquisition/blob/main/LICENSE)
 
 ## Acknowledgments
 
-- Element84 for Earth Search STAC API
-- Microsoft Planetary Computer for open data access
+- [Element84](https://www.element84.com/) for Earth Search STAC API
+- [Microsoft Planetary Computer](https://planetarycomputer.microsoft.com/) for open data access
 - ESA for Sentinel satellite programs
 - NASA/USGS for Landsat data
 
 ## Support
 
-- **Documentation**: See [docs/](docs/) directory
-- **Examples**: Check [examples/](examples/) notebooks
-- **Issues**: Open an issue on GitHub
-
-## What's Next?
-
-1. **Explore examples**: Open [examples/s2mpc/single_area_download.ipynb](examples/s2mpc/single_area_download.ipynb)
-2. **Read documentation**: Start with [SATELLITE_SOURCES.md](docs/SATELLITE_SOURCES.md)
-3. **Try your own data**: Modify example GeoJSON in [data/geojson/](data/geojson/)
-4. **Customize processing**: See [PROCESSING_PARAMETERS.md](docs/PROCESSING_PARAMETERS.md)
-
-Happy satellite data hunting!
+- Issues: [GitHub Issues](https://github.com/Kongstad/sat-data-acquisition/issues)
+- Documentation: [GitHub Repository](https://github.com/Kongstad/sat-data-acquisition)
