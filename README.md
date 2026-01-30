@@ -53,8 +53,14 @@ Python package for downloading satellite imagery from multiple sources with a st
 
 ### Installation
 
-**With UV (recommended - 10-100x faster):**
+**From PyPI (recommended):**
 ```bash
+pip install sat-data-acquisition
+```
+
+**For development:**
+```bash
+# With UV (10-100x faster)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv && source .venv/bin/activate
 uv pip install -e .
