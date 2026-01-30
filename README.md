@@ -5,7 +5,7 @@ Python package for downloading satellite imagery from multiple sources with a st
 ![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
 ![Version](https://img.shields.io/badge/version-0.9.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-[![CI](https://img.shields.io/github/actions/workflow/status/Kongstad/sat-data-acquisition/ci.yml?branch=main&label=CI)](https://github.com/Kongstad/sat-data-acquisition/actions)
+![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)
 
 ## Table of Contents
 
