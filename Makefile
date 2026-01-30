@@ -1,7 +1,7 @@
 # Makefile for Satellite Data Acquisition development tasks
 # Author: Peter Kongstad
 
-.PHONY: help install install-dev install-uv install-dev-uv test test-fast test-cov lint format check clean pre-commit docker docker-build docker-run
+.PHONY: help install install-dev install-uv install-dev-uv test test-fast test-cov lint format check clean docker docker-build docker-run
 
 help:
 	@echo "Satellite Data Acquisition Development Commands"
@@ -14,7 +14,6 @@ help:
 	@echo "Setup (pip):"
 	@echo "  make install          Install package and dependencies"
 	@echo "  make install-dev      Install with development dependencies"
-	@echo "  make pre-commit       Install pre-commit hooks"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-build     Build Docker image"
@@ -42,17 +41,14 @@ install:
 
 install-dev:
 	pip install -e .
-	pip install pytest ruff black pre-commit ipykernel tbump
+	pip install pytest ruff black ipykernel tbump
 
 install-uv:
 	uv pip install -e .
 
 install-dev-uv:
 	uv pip install -e .
-	uv pip install pytest ruff black pre-commit ipykernel tbump
-
-pre-commit:
-	pre-commit install
+	uv pip install pytest ruff black ipykernel tbump
 
 docker-build:
 	docker build -t sat-data-acquisition .
