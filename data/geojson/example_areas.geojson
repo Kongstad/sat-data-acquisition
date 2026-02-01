@@ -1,0 +1,59 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Copenhagen"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [12.4264, 55.5861],
+            [12.7064, 55.5861],
+            [12.7064, 55.7661],
+            [12.4264, 55.7661],
+            [12.4264, 55.5861]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "London"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.2728, 51.4123],
+            [0.0172, 51.4123],
+            [0.0172, 51.5923],
+            [-0.2728, 51.5923],
+            [-0.2728, 51.4123]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Seattle"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4731, 47.5101],
+            [-122.1931, 47.5101],
+            [-122.1931, 47.6901],
+            [-122.4731, 47.6901],
+            [-122.4731, 47.5101]
+          ]
+        ]
+      }
+    }
+  ]
+}
