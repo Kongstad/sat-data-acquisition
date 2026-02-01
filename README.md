@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/header1.png" alt="Satellite Data Acquisition Banner" width="600">
+  <img src="docs/images/header1.png" alt="Satellite Data Acquisition Banner" width="800">
 </p>
 
 # Satellite Data Acquisition
