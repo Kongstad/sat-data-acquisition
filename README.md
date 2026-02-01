@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/images/header1.png" alt="Satellite Data Acquisition Banner" width="800">
-</p>
-
 # Satellite Data Acquisition
 
 Python package for downloading satellite imagery from multiple sources with a standardized API.
@@ -10,6 +6,10 @@ Python package for downloading satellite imagery from multiple sources with a st
 ![Version](https://img.shields.io/badge/version-0.9.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 [![CI](https://github.com/Kongstad/sat-data-acquisition/actions/workflows/ci.yml/badge.svg)](https://github.com/Kongstad/sat-data-acquisition/actions)
+
+<p align="center">
+  <img src="docs/images/header1.png" alt="Satellite Data Acquisition Banner" width="800">
+</p>
 
 ## Table of Contents
 
