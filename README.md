@@ -1,7 +1,5 @@
 # Satellite Data Acquisition
 
-Python package for downloading satellite imagery from multiple sources with a standardized API.
-
 ![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
 ![Version](https://img.shields.io/badge/version-0.9.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -10,6 +8,8 @@ Python package for downloading satellite imagery from multiple sources with a st
 <p align="center">
   <img src="docs/images/header1.png" alt="Satellite Data Acquisition Banner" width="800">
 </p>
+
+Python package for downloading satellite imagery from multiple sources with a standardized API.
 
 ## Table of Contents
 
